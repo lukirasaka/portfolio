@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fotogalerie</title>
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/js/all.min.js" crossorigin="anonymous"></script>
+    <script defer src="theme.js"></script>
+</head>
+
+<body>
+    <!-- Dynamicky načtená navigace -->
+    <header id="navbar-container"></header>
+    <script>
+        fetch('navbar.html')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('navbar-container').innerHTML = data;
+
+                // Inicializace šipky u logo-textu
+                const logoText = document.querySelector('.logo-text');
+                if (logoText) {
+                    const logoSVG = logoText.nextElementSibling;
+                    if (logoSVG) {
+                        logoSVG.style.transition = 'transform 600ms ease';
+                        logoSVG.style.transform = 'rotate(0deg)';
+                        logoText.addEventListener('mouseenter', () => {
+                            logoSVG.style.transform = 'rotate(-180deg)';
+                        });
+                        logoText.addEventListener('mouseleave', () => {
+                            logoSVG.style.transform = 'rotate(0deg)';
+                        });
+                    }
+                }
+
+                // Tlačítko pro změnu motivu
+                const themeButton = document.getElementById('themeButton');
+                if (themeButton) {
+                    themeButton.addEventListener('click', () => {
+                        const currentTheme = document.body.classList[0];
+                        const themes = ['light', 'dark', 'solar'];
+                        const nextTheme = themes[(themes.indexOf(currentTheme) + 1) % themes.length];
+                        document.body.classList.remove(currentTheme);
+                        document.body.classList.add(nextTheme);
+                        localStorage.setItem('theme', nextTheme);
+                    });
+
+                    const savedTheme = localStorage.getItem('theme');
+                    if (savedTheme) {
+                        document.body.classList.add(savedTheme);
+                    } else {
+                        document.body.classList.add('light');
+                    }
+                }
+            });
+    </script>
+
+    <main>
+        <h1>Náhled do mého života 🌏</h1>
+        <hr>
+        <div class="gallery" id="gallery"></div>
+
+        <!-- Lightbox pro zvětšený obrázek -->
+        <div id="lightbox" class="lightbox">
+            <img id="lightbox-img" src="" alt="Zvětšený obrázek">
+        </div>
+    </main>
+
+    <script>
+        // Dynamické načtení obrázků ze složky
+        const gallery = document.getElementById('gallery');
+        const imageCount = 28;
+        const imagePath = 'images/';
+        let currentImageIndex = 0;
+
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImg = document.getElementById('lightbox-img');
+
+        for (let i = 1; i <= imageCount; i++) {
+            const img = document.createElement('img');
+            img.src = `${imagePath}obrazek${i}.jpg`;
+            img.alt = `Obrázek ${i}`;
+            img.dataset.index = i - 1;
+
+            img.addEventListener('click', () => {
+                currentImageIndex = parseInt(img.dataset.index);
+                openLightbox(currentImageIndex);
+            });
+
+            img.onerror = function () {
+                console.warn(`Obrázek ${i} nebyl nalezen na cestě ${img.src}`);
+                this.style.display = 'none';
+            };
+
+            gallery.appendChild(img);
+        }
+
+        function openLightbox(index) {
+            lightboxImg.src = `${imagePath}obrazek${index + 1}.jpg`;
+            lightbox.style.display = 'flex';
+        }
+
+        lightbox.addEventListener('click', () => {
+            lightbox.style.display = 'none';
+        });
+
+        function showNextImage() {
+            currentImageIndex = (currentImageIndex + 1) % imageCount;
+            openLightbox(currentImageIndex);
+        }
+
+        function showPrevImage() {
+            currentImageIndex = (currentImageIndex - 1 + imageCount) % imageCount;
+            openLightbox(currentImageIndex);
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (lightbox.style.display === 'flex') {
+                if (e.key === 'ArrowRight') {
+                    showNextImage();
+                } else if (e.key === 'ArrowLeft') {
+                    showPrevImage();
+                } else if (e.key === 'Escape') {
+                    lightbox.style.display = 'none';
+                }
+            }
+        });
+    </script>
+</body>
+</html>

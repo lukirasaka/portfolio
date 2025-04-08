@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kontakty</title>
+    <!-- Načtení stylů -->
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700&display=swap" rel="stylesheet">
+    <!-- Font Awesome 6 pro ikony -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/js/all.min.js" crossorigin="anonymous"></script>
+    <!-- Načtení JS pro změnu motivu -->
+    <script defer src="theme.js"></script>
+</head>
+
+<body>
+    <!-- Dynamické načítání navigace -->
+    <header id="navbar-container"></header>
+    <script>
+        // Načítání navigační lišty
+        fetch('navbar.html')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('navbar-container').innerHTML = data;
+
+                // Inicializace šipky u logo-textu
+                const logoText = document.querySelector('.logo-text');
+                if (logoText) {
+                    const logoSVG = logoText.nextElementSibling;
+                    if (logoSVG) {
+                        logoSVG.style.transition = 'transform 600ms ease';
+                        logoSVG.style.transform = 'rotate(0deg)';
+                        logoText.addEventListener('mouseenter', () => {
+                            logoSVG.style.transform = 'rotate(-180deg)';
+                        });
+                        logoText.addEventListener('mouseleave', () => {
+                            logoSVG.style.transform = 'rotate(0deg)';
+                        });
+                    }
+                }
+
+                // Přidání funkčnosti tlačítka pro změnu motivu
+                const themeButton = document.getElementById('themeButton');
+                if (themeButton) {
+                    themeButton.addEventListener('click', () => {
+                        const currentTheme = document.body.classList[0];
+                        const themes = ['light', 'dark', 'solar'];
+                        const nextTheme = themes[(themes.indexOf(currentTheme) + 1) % themes.length];
+                        document.body.classList.remove(currentTheme);
+                        document.body.classList.add(nextTheme);
+                        localStorage.setItem('theme', nextTheme);
+                    });
+
+                    // Nastavení výchozího motivu při načtení stránky
+                    const savedTheme = localStorage.getItem('theme');
+                    if (savedTheme) {
+                        document.body.classList.add(savedTheme);
+                    } else {
+                        document.body.classList.add('light');
+                    }
+                }
+            });
+    </script>
+
+    <main>
+        <h1>Kontakty 📞</h1>
+        <hr>
+        <div class="contact-container">
+            <div class="contact-card">
+                <i class="fa-solid fa-envelope contact-icon"></i>
+                <h2>E-mail</h2>
+                <a href="mailto:lraska03@seznam.cz">lraska03@seznam.cz</a>
+            </div>
+    
+            <div class="contact-card">
+                <i class="fa-solid fa-phone contact-icon"></i>
+                <h2>Telefon</h2>
+                <a href="tel:+420733425112">+420 733 425 112</a>
+            </div>
+    
+            <div class="contact-card">
+                <i class="fa-brands fa-linkedin contact-icon"></i>
+                <h2>LinkedIn</h2>
+                <a href="https://www.linkedin.com/in/lukáš-raška-58520a35b/" target="_blank">Můj LinkedIn</a>
+            </div>
+    
+            <div class="contact-card">
+                <i class="fa-brands fa-github contact-icon"></i>
+                <h2>GitHub</h2>
+                <a href="https://github.com/lukirasaka" target="_blank">Můj GitHub</a>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

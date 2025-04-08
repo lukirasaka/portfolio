@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lukáš Raška - Portfolio</title>
+  <link rel="icon" href="favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700&display=swap" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/js/all.min.js" crossorigin="anonymous"></script>
+  <script defer src="theme.js"></script>
+</head>
+
+<body>
+  <header id="navbar-container"></header>
+  <script>
+    fetch('navbar.html')
+      .then(response => response.text())
+      .then(data => {
+        document.getElementById('navbar-container').innerHTML = data;
+
+        const logoText = document.querySelector('.logo-text');
+        if (logoText) {
+          const logoSVG = logoText.nextElementSibling;
+          if (logoSVG) {
+            logoSVG.style.transition = 'transform 600ms ease';
+            logoSVG.style.transform = 'rotate(0deg)';
+            logoText.addEventListener('mouseenter', () => {
+              logoSVG.style.transform = 'rotate(-180deg)';
+            });
+            logoText.addEventListener('mouseleave', () => {
+              logoSVG.style.transform = 'rotate(0deg)';
+            });
+          }
+        }
+
+        const themeButton = document.getElementById('themeButton');
+        if (themeButton) {
+          themeButton.addEventListener('click', () => {
+            const currentTheme = document.body.classList[0];
+            const themes = ['light', 'dark', 'solar'];
+            const nextTheme = themes[(themes.indexOf(currentTheme) + 1) % themes.length];
+            document.body.classList.remove(currentTheme);
+            document.body.classList.add(nextTheme);
+            localStorage.setItem('theme', nextTheme);
+          });
+
+          const savedTheme = localStorage.getItem('theme');
+          document.body.classList.add(savedTheme || 'light');
+        }
+      });
+  </script>
+
+  <main>
+    <h1>O mně 👨‍💻</h1>
+    <p class="subheading">Lukáš Raška<br><span class="tagline">Student informatiky a začínající vývojář</span></p>
+    <hr>
+
+    <div class="info-grid">
+      <div class="info-box">
+        <h2><i class="fas fa-user"></i> Kdo jsem</h2>
+        <p>
+          Jsem student Informatiky na Univerzitě Palackého se zájmem o programování a vývoj moderních aplikací. Mám zkušenosti se C a LISP z univerzitních projektů a aktivně se učím Python a webové technologie.
+        </p>
+        <p>
+          Mimo programování se věnuji sportu, hudbě a příležitostně se zapojuji do lokálních akcí – ať už jako plavčík, nebo pomocník na festivalech. Věřím, že všestrannost je klíčem k dobré spolupráci.
+        </p>
+      </div>
+
+      <div class="info-box">
+        <h2><i class="fas fa-briefcase"></i> Pracovní zkušenosti</h2>
+        <ul>
+          <li><strong>Správce kluziště</strong> (Prosinec 2023 – Leden 2025)<br>
+          Provoz, údržba, zákaznický servis a propagace kluziště ve Slavičíně.</li>
+
+          <li><strong>Plavčík</strong> (Léto 2022, Léto 2023)<br>
+          Dohled nad bezpečností návštěvníků na koupališti ve Slavičíně.</li>
+
+          <li><strong>Pomoc na festivalu Karpaty fest</strong> (každoročně v létě)<br>
+          Stavba zázemí, výpomoc ve stáncích a základní zajištění prostoru.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="skills-summary">
+        <h2><i class="fas fa-tools"></i> Dovednosti v kostce</h2>
+        <div class="skills-grid">
+            <div class="skill">
+                <i class="fas fa-code"></i>
+                <p>Python<br><span>začátečnická znalost</span></p>
+            </div>
+            <div class="skill">
+                <i class="fas fa-terminal"></i>
+                <p>C<br><span>praktické využití</span></p>
+            </div>
+            <div class="skill">
+                <i class="fab fa-html5"></i>
+                <p>HTML & CSS<br><span>učím se</span></p>
+            </div>
+            <div class="skill">
+                <i class="fas fa-database"></i>
+                <p>SQL (MySQL, PostgreSQL)<br><span>základy</span></p>
+            </div>
+            <div class="skill">
+                <i class="fas fa-laptop-code"></i>
+                <p>LISP<br><span>univerzitní projekty</span></p>
+            </div>
+        </div>
+    </div>
+  </main>
+</body>
+</html>

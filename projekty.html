@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projekty</title>
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/js/all.min.js" crossorigin="anonymous"></script>
+    <script defer src="theme.js"></script>
+</head>
+
+<body>
+    <!-- Dynamické načítání navigace -->
+    <header id="navbar-container"></header>
+    <script>
+        // Načítání navigační lišty
+fetch('navbar.html')
+.then(response => response.text())
+.then(data => {
+    document.getElementById('navbar-container').innerHTML = data;
+
+    // Inicializace šipky u logo-textu
+    const logoText = document.querySelector('.logo-text');
+    if (logoText) {
+        const logoSVG = logoText.nextElementSibling;
+        if (logoSVG) {
+            logoSVG.style.transition = 'transform 600ms ease';
+            logoSVG.style.transform = 'rotate(0deg)';
+            logoText.addEventListener('mouseenter', () => {
+                logoSVG.style.transform = 'rotate(-180deg)';
+            });
+            logoText.addEventListener('mouseleave', () => {
+                logoSVG.style.transform = 'rotate(0deg)';
+            });
+        }
+    }
+
+    // Funkce pro změnu motivu
+    const themeButton = document.getElementById('themeButton');
+    if (themeButton) {
+        themeButton.addEventListener('click', () => {
+            const currentTheme = document.body.classList[0];
+            const themes = ['light', 'dark', 'solar'];
+            const nextTheme = themes[(themes.indexOf(currentTheme) + 1) % themes.length];
+            document.body.classList.remove(currentTheme);
+            document.body.classList.add(nextTheme);
+            localStorage.setItem('theme', nextTheme);
+        });
+
+        // Nastavení výchozího motivu při načtení stránky
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme) {
+            document.body.classList.add(savedTheme);
+        } else {
+            document.body.classList.add('light');
+        }
+    }
+});
+
+    </script>
+
+    <main>
+        <h1>Projekty 📝</h1>
+        <p style="text-align: center; margin-bottom: 20px;">
+            Některé z těchto projektů v jazyce C byly vytvořeny v rámci studijních úkolů na Univerzitě Palackého.
+        </p>
+        <hr>
+
+        <!-- Výběr programovacího jazyka -->
+        <div class="projects-list">
+            <div class="project-item" onclick="showProjects('c')">Projekty v jazyce C</div>
+            <div class="project-item" onclick="showProjects('python')">Projekty v Pythonu</div>
+        </div>
+
+        <!-- Podsekce s projekty (skrytá dokud se nevybere jazyk) -->
+        <div id="project-section" style="display: none;">
+            <h2 id="language-title"></h2>
+            <div class="projects-list" id="language-projects"></div>
+            <button onclick="goBack()" class="back-button">Zpět</button>
+        </div>
+
+        <!-- Modální okno s kódem -->
+        <div id="modal" class="modal">
+            <div class="modal-content">
+                <button class="copy-button" onclick="copyCode()">Copy</button>
+                <span id="copy-notification" class="copy-notification" style="display:none;">Zkopírováno!</span>
+                <span class="close" onclick="closeModal()">&times;</span>
+                <pre id="code-display" class="code-block"></pre>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Zobrazení seznamu projektů podle jazyka
+        function showProjects(language) {
+            const projects = {
+                c: [
+                    { name: "Program kreslící obrazec pomocí ASCII", file: "asciigrafika.c" },
+                    { name: "Implementace binárního vyhledávání", file: "binarysearch.c" },
+                    { name: "Porovnání efektivity třídících algoritmů", file: "sortcompare.c" },
+                    { name: "Výpis stylizované ASCII tabulky na výstup", file: "ascii.c" }
+                ],
+                python: [
+                    { name: "Prototyp hry typu Flappy Bird v pygame", file: "flappy.py" },
+                    { name: "Hra Pong pro dva hráče v pygame", file: "pong.py"},
+                    { name: "Automatizovaný telegram bot na příjem objednávek", file: "shopping_bot.py"}
+                ]
+            };
+
+            // Nastavení nadpisu
+            document.getElementById("language-title").textContent = "Projekty v jazyce " + language.charAt(0).toUpperCase() + language.slice(1);
+            const projectList = document.getElementById("language-projects");
+            projectList.innerHTML = "";
+
+            // Vygenerování seznamu projektů
+            projects[language].forEach(proj => {
+                const projectDiv = document.createElement("div");
+                projectDiv.className = "project-item";
+                projectDiv.textContent = proj.name;
+                projectDiv.onclick = () => openProject(language, proj.file);
+                projectList.appendChild(projectDiv);
+            });
+
+            // Zobrazení podsekce
+            document.querySelector(".projects-list").style.display = "none";
+            document.getElementById("project-section").style.display = "block";
+        }
+
+        // Návrat na hlavní stránku
+    function goBack() {
+        // Obnovení viditelnosti hlavního seznamu
+     const mainList = document.querySelector(".projects-list");
+        mainList.style.display = "block";
+
+        // Obnovení rozložení (mezery mezi položkami)
+        const projectItems = mainList.querySelectorAll(".project-item");
+        projectItems.forEach(item => {
+            item.style.marginBottom = "10px";  // Přidání mezery
+        });
+
+    // Skrytí podsekce
+    document.getElementById("project-section").style.display = "none";
+}
+        // Otevření projektu
+        function openProject(language, fileName) {
+            fetch(`scripts/${language}/${fileName}`)
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById('code-display').textContent = data;
+                    document.getElementById('modal').style.display = 'block';
+        
+                    // Při každém otevření modálu znovu přiřaď funkci "Copy"
+                    const copyBtn = document.querySelector('.copy-button');
+                    copyBtn.onclick = () => {
+                        navigator.clipboard.writeText(data).then(() => {
+                            const notification = document.getElementById('copy-notification');
+                            notification.style.display = 'inline';
+                            setTimeout(() => {
+                                notification.style.display = 'none';
+                            }, 1000);
+                        });
+                    };
+                });
+        }
+
+        // Zavření modálního okna
+        function closeModal() {
+            document.getElementById('modal').style.display = 'none';
+            document.getElementById('copy-notification').style.display = 'none'; // Skrytí notifikace
+        }
+
+        // Zavření modálního okna při kliknutí mimo obsah
+        window.onclick = function(event) {
+            const modal = document.getElementById('modal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        };
+
+        // Zavření modálního okna při stisknutí klávesy "ESC"
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>
