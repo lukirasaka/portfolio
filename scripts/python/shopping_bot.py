@@ -116,7 +116,7 @@ def fallback(update: Update, context: CallbackContext) -> None:
         update.message.reply_text("Použijte /menu pro objednání.")
 
 def main() -> None:
-    updater = Updater("7807211520:AAHcIuhFHm0zZOWPcYiR0CpC6oqdU6hHmIQ", use_context=True)
+    updater = Updater("API_KEY", use_context=True)
 
     dispatcher = updater.dispatcher
     dispatcher.add_handler(CommandHandler("start", start))
